@@ -11,7 +11,7 @@
 <template>
   <h1>GRID</h1>
   <section id="grid">
-    <button :disabled="workoutIndex > 0 && workoutIndex > firstIncompleteWorkoutIndex" @click="handleSelectWorkout(workoutIndex)" v-for="workout, workoutIndex in Object.keys(workoutProgram)" :key="workoutIndex" class="card-button plan-card">
+    <button :disabled="workoutIndex > 0 && workoutIndex > firstIncompleteWorkoutIndex" @click="handleSelectWorkout(workoutIndex)" v-for="_workout, workoutIndex in Object.keys(workoutProgram)" :key="workoutIndex" class="card-button plan-card">
       <div>
         <p>Day {{ workoutIndex < 9 ? '0' + (workoutIndex + 1) : workoutIndex + 1 }}</p>
         <i class="fa-solid fa-dumbbell" v-if="workoutIndex%3===0"></i>
