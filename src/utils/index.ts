@@ -518,3 +518,40 @@ export const gymHealthFacts: string[] = [
   'A proper warm-up increases blood flow and reduces injury risk.',
   'Skipping rest days can lead to overtraining, fatigue, and stalled progress.',
 ];
+
+export interface Workout {
+  warmup: {
+    name: string;
+    sets: number;
+    reps: number;
+  }[];
+  workout: {
+    name: string;
+    sets: number;
+    reps: number;
+  }[];
+}
+
+export const getWorkoutProgram: any = () => {
+  let defaultData: any = {};
+
+  if (localStorage) {
+    const savedData = localStorage.getItem('workouts');
+    if (savedData) {
+      defaultData = JSON.parse(savedData);
+      return defaultData;
+    }
+  }
+
+  // build data
+  for (let workoutIndex in workoutProgram) {
+    const workoutData: Workout = workoutProgram[workoutIndex];
+
+    defaultData[workoutIndex] = {};
+    for (let e of workoutData.workout) {
+      defaultData[workoutIndex][e.name] = '';
+    }
+  }
+
+  return defaultData;
+};

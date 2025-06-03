@@ -3,8 +3,8 @@
 </script>
 
 <template>
-<header><h1 class="text-gradient">GRIM</h1></header>
-<main><slot></slot></main>
+<!-- <header><h1 class="text-gradient">GRIM</h1></header>
+<main><slot></slot></main> -->
 <footer>
   <small>Created by Mohanbe</small>
   <a href="https://www.github.com/andreumb" target="_blank">

@@ -1,17 +1,27 @@
 <script setup lang="ts">
-  import { computed, ref, type ComputedRef, type Ref } from 'vue';
-  import { exerciseDescriptions, workoutProgram } from '../../utils';
+  import { computed, onMounted, ref, type ComputedRef, type Ref } from 'vue';
+  import { exerciseDescriptions, getWorkoutProgram, workoutProgram } from '../../utils';
   import Portal from '../Portal.vue';
+  import { useRoute, useRouter } from 'vue-router';
 
   const workoutTypes = ['Push','Pull','Legs']
+  const router = useRouter()
 
-  const {data,selectedWorkout} = defineProps({
-    data: {type: Object, required: true},
-    selectedWorkout:{type: Number, required: true},
-    handleSaveWorkout:{type: Function, required: true},
-    isWorkoutComplete:{type: Boolean, required: true},
-  })
-  const { workout, warmup } = workoutProgram[selectedWorkout]
+
+  // const data = ref(workoutProgram)
+  const saveData = ref(getWorkoutProgram())
+
+  console.log(saveData.value);
+  
+  const workoutId:number = Number(useRoute().params.id[0])
+ 
+  
+
+  
+  
+  const { workout, warmup } = workoutProgram[workoutId]
+
+  
   let selectedExercise:Ref<string,string> = ref("")
   
   const exerciseDescription:ComputedRef<string> = computed(() => exerciseDescriptions[selectedExercise.value]) 
@@ -19,6 +29,20 @@
   function handleCloseModal() {
     selectedExercise.value = ""
   }
+
+  function handleSaveWorkout() {   
+    localStorage.setItem('workouts', JSON.stringify(saveData.value))
+    router.push('/')
+  }
+
+  const isWorkoutComplete = computed(() => {
+    const currentWorkout = saveData.value?.[workoutId]
+    if (!currentWorkout) return false
+    const isComplete = Object.values(currentWorkout).every(ex => !!ex)
+    
+    return isComplete
+  })
+
 </script>
 
 <template>
@@ -35,10 +59,10 @@
   <section id="workout-card">
     <div class="plan-card card">
       <div class="plan-card-header">
-        <p>Day {{ selectedWorkout < 9 ? '0' + (selectedWorkout + 1) : selectedWorkout + 1 }}</p>
-        <i class="fa-solid fa-dumbbell" v-if="selectedWorkout%3===0"></i>
+        <p>Day {{ workoutId < 9 ? '0' + (workoutId + 1) : workoutId + 1 }}</p>
+        <i class="fa-solid fa-dumbbell" v-if="workoutId%3===0"></i>
       </div>
-      <h2>{{ workoutTypes[selectedWorkout % 3] }} Workout</h2>
+      <h2>{{ workoutTypes[workoutId % 3] }} Workout</h2>
     </div>
     <div class="workout-grid">
       <h4 class="grid-name">Warmup</h4>
@@ -59,16 +83,16 @@
       <h6>Sets</h6>
       <h6>Reps</h6>
       <h6 class="grid-weights">Wrights</h6>
-        <div class="workout-grid-row" v-for="w, wIndex in workout" :key="wIndex">
-          <div class="grid-name">
-            <p>{{ w.name }}</p>
-            <button @click="() => selectedExercise=w.name"><i class="fa-regular fa-circle-question"></i></button>
-          </div>
-          <p>{{ w.sets }}</p>
-          <p>{{ w.reps }}</p>
-          <input v-model="data[selectedWorkout][w.name]" type="text" class="grid-weights" placeholder="14kg">
+      <div class="workout-grid-row" v-for="w, wIndex in workout" :key="wIndex">
+        <div class="grid-name">
+          <p>{{ w.name }}</p>
+          <button @click="() => selectedExercise=w.name"><i class="fa-regular fa-circle-question"></i></button>
         </div>
+        <p>{{ w.sets }}</p>
+        <p>{{ w.reps }}</p>
+        <input v-model="saveData[workoutId][w.name]" type="text" class="grid-weights" placeholder="14kg">
       </div>
+    </div>
   </section>
   <div class="card workout-btns">
     <button @click="handleSaveWorkout()">Save and Exit <i class="fa-solid fa-save"></i></button>

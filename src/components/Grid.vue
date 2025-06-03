@@ -1,9 +1,30 @@
 <script setup lang="ts">
-  import { workoutProgram } from '../utils';
+  import { computed, ref } from 'vue';
+  import { getWorkoutProgram, workoutProgram } from '../utils';
   defineProps({
-    handleSelectWorkout: {type:Function, required: true},
-    firstIncompleteWorkoutIndex: {type:Number, required: true},
+    // handleSelectWorkout: {type:Function, required: true},
+    // firstIncompleteWorkoutIndex: {type:Number, required: true},
     handleResetPlan: {type:Function, required: true}
+  })
+
+
+  const data = ref(getWorkoutProgram())
+
+  const firstIncompleteWorkoutIndex = computed(()=> {
+    const allWorkout:[]|null = data.value
+    
+    if (!allWorkout) return -1
+      console.log(allWorkout);
+
+    for (const [index, workout] of Object.entries(allWorkout)){
+      const isComplete = Object.values(workout).every(ex => {
+        return !!ex
+      })
+      console.log(isComplete);
+      
+      if (!isComplete) return parseInt(index)
+    }
+    return -1
   })
   const workoutTypes = ['Push','Pull','Legs']
 </script>
@@ -11,14 +32,24 @@
 <template>
   <h1>GRID</h1>
   <section id="grid">
-    <button :disabled="workoutIndex > 0 && workoutIndex > firstIncompleteWorkoutIndex" @click="handleSelectWorkout(workoutIndex)" v-for="_workout, workoutIndex in Object.keys(workoutProgram)" :key="workoutIndex" class="card-button plan-card">
-      <div>
+    <button :disabled="workoutIndex > 0 && workoutIndex > firstIncompleteWorkoutIndex" v-for="_workout, workoutIndex in Object.keys(workoutProgram)" :key="workoutIndex" class="card-button plan-card">
+      {{ firstIncompleteWorkoutIndex }}
+      <div v-if="workoutIndex > 0 && workoutIndex > firstIncompleteWorkoutIndex">
         <p>Day {{ workoutIndex < 9 ? '0' + (workoutIndex + 1) : workoutIndex + 1 }}</p>
         <i class="fa-solid fa-dumbbell" v-if="workoutIndex%3===0"></i>
         <i class="fa-solid fa-weight-hanging" v-if="workoutIndex%3===1"></i>
         <i class="fa-solid fa-bolt" v-if="workoutIndex%3===2"></i>
       </div>
+      <RouterLink v-else :to="`/workout/${workoutIndex}`" >
+        <div>
+          <p>Day {{ workoutIndex < 9 ? '0' + (workoutIndex + 1) : workoutIndex + 1 }}</p>
+          <i class="fa-solid fa-dumbbell" v-if="workoutIndex%3===0"></i>
+          <i class="fa-solid fa-weight-hanging" v-if="workoutIndex%3===1"></i>
+          <i class="fa-solid fa-bolt" v-if="workoutIndex%3===2"></i>
+        </div>
+      </RouterLink>
       <h3>{{ workoutTypes[workoutIndex%3] }}</h3>
+
     </button>
     <button :disabled="firstIncompleteWorkoutIndex != -1" @click="handleResetPlan()" class="card-button plan-card-reset">
       <p>Reset</p>

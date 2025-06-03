@@ -23,7 +23,7 @@
       <h3>Challenge</h3>
       <p>Complete all the workouts</p>
       <p>Do yo ace</p>
-      <button @click="handleChangeDisplay(2)" >Begin &rarr;</button>
+      <RouterLink to="/">Begin &rarr;</RouterLink>
     </div>
   </section>
 </template>
