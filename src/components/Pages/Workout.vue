@@ -1,23 +1,16 @@
 <script setup lang="ts">
-  import { computed, onMounted, ref, type ComputedRef, type Ref } from 'vue';
-  import { exerciseDescriptions, getWorkoutProgram, workoutProgram } from '../../utils';
+  import { computed, ref, type ComputedRef, type Ref } from 'vue';
+  import { exerciseDescriptions, getWorkoutProgram, workoutProgram, workoutTypes } from '../../utils';
   import Portal from '../Portal.vue';
   import { useRoute, useRouter } from 'vue-router';
 
-  const workoutTypes = ['Push','Pull','Legs']
   const router = useRouter()
 
 
-  // const data = ref(workoutProgram)
   const saveData = ref(getWorkoutProgram())
 
-  console.log(saveData.value);
   
   const workoutId:number = Number(useRoute().params.id[0])
- 
-  
-
-  
   
   const { workout, warmup } = workoutProgram[workoutId]
 

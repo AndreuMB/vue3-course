@@ -532,17 +532,10 @@ export interface Workout {
   }[];
 }
 
-export const getWorkoutProgram: any = () => {
+export const workoutTypes = ['Push', 'Pull', 'Legs'];
+
+export const getDefaultData: any = () => {
   let defaultData: any = {};
-
-  if (localStorage) {
-    const savedData = localStorage.getItem('workouts');
-    if (savedData) {
-      defaultData = JSON.parse(savedData);
-      return defaultData;
-    }
-  }
-
   // build data
   for (let workoutIndex in workoutProgram) {
     const workoutData: Workout = workoutProgram[workoutIndex];
@@ -554,4 +547,33 @@ export const getWorkoutProgram: any = () => {
   }
 
   return defaultData;
+};
+
+export const getWorkoutProgram: any = () => {
+  let data: any = {};
+
+  if (localStorage) {
+    const savedData = localStorage.getItem('workouts');
+    if (savedData) {
+      data = JSON.parse(savedData);
+      return data;
+    }
+  }
+
+  return getDefaultData();
+};
+
+export const firstIncompleteWorkoutIndex = (data: []) => {
+  const allWorkout: [] = data;
+
+  if (!allWorkout) return 0;
+
+  for (const [index, workout] of Object.entries(allWorkout)) {
+    const isComplete = Object.values(workout).every((ex) => {
+      return !!ex;
+    });
+
+    if (!isComplete) return parseInt(index);
+  }
+  return 0;
 };
